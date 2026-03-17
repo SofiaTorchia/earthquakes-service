@@ -18,21 +18,11 @@ Stops the running Postgres container.
 
 **Prerequisites**
 
-- Podman installed and running
 - uv installed
 - FastAPI development tools installed
 
 ## To do
 
-- [X] Dockerfile
-- [ ] Start docker container with one command (makefile?)
-- [ ] In the same makefile: run python script that runs sql query (psycopg)
-- [X] Make queries idempotent
-- [X] Read sql file from queries.py
-- [X] Pass db connection settings as env var
+- [ ] New readme
 - [ ] Use a build tool (uv)
 - [ ] Point stramlit app to fastapi app
-- [X] In db: how to use paramenters in psycopg connect
-- [X] queries.py and queries.sql to get row from user id
-- [X] Return Pydantic BaseModel instance as output of "get" 
-function of FastAPI. A database row is transformed into a Pydantic Basemodel object instance.
