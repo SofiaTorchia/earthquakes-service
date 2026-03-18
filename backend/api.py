@@ -9,12 +9,12 @@ logging.basicConfig(
 
 app = FastAPI()
 
-@app.get("earthquakes/format={format}&starttime={start}&endtime={end}&limit={limit}")
-async def get_earthquakes(format: str, start: str, end: str, limit: int):
+@app.get("/earthquakes")
+async def get_earthquakes(format: str, starttime: str, endtime: str, limit: str):
     params = {
         'format': format, 
-        'starttime': start, 
-        'endtime' : end, 
+        'starttime': starttime, 
+        'endtime' : endtime, 
         'limit': limit
     }
     response = requests.get(
