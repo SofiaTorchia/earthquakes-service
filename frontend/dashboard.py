@@ -1,7 +1,11 @@
+"""
+Sreamlit frontend for earthquake-service app
+"""
+
+import time
 import streamlit as st
 import pandas as pd
 import requests
-import time
 
 API_URL = "http://127.0.0.1:8000/earthquakes"
 
@@ -55,10 +59,9 @@ def fetch_earthquake_data(payload):
     Query the USGS Earthquake API using the provided request parameters.
     """
     if payload:
-        r = requests.get(API_URL, payload)
+        r = requests.get(API_URL, payload, timeout=10)
         return r.json()
-    else:
-        return {}
+    return {}
 
 
 def main():

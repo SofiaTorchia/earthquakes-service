@@ -5,9 +5,17 @@ description = "API for visualizing earthquake data on an interactive map."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "black>=26.3.1",
     "fastapi[standard]>=0.135.1",
     "psycopg[binary]>=3.3.3",
     "requests>=2.32.5",
     "streamlit>=1.55.0",
+]
+
+[dependency-groups]
+dev = [
+    "black>=26.3.1",
+    "mypy>=1.20.0",
+    "pandas-stubs>=2.3.3.260113",
+    "pylint>=4.0.5",
+    "types-requests>=2.33.0.20260402",
 ]
