@@ -4,7 +4,7 @@ CREATE TABLE if not exists earthquakes (
     lat float, 
     lon float, 
     magnitude float, 
-    time date,
+    time timestamp,
     alert varchar
 );
 
