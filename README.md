@@ -5,5 +5,12 @@ This repository contains a FastAPI backend and a Streamlit frontend. The applica
 **Steps to run the app**
 
 - Install uv: https://docs.astral.sh/uv/getting-started/installation/
+- start db
+
+```
+podman build -t earthquakes_dbimage .
+podman run -d -p 5432:5432 --name earthquakes_dbcontainer earthquakes_dbimage || podman start earthquakes_dbcontainer
+```
+
 - Start the backend with: ```make backend```
 - Start the frontend with: ```make frontend```

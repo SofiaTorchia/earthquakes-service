@@ -7,7 +7,7 @@ from fastapi import FastAPI
 import requests
 
 logging.basicConfig(
-    level=logging.INFO, format="%(levelname)s - %(message)s - %(asctime)s"
+    level=logging.INFO, format="\n%(levelname)s - %(message)s - %(asctime)s\n"
 )
 
 app = FastAPI()

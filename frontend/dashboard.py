@@ -29,7 +29,6 @@ def parse_geojson_features(data):
     Convert a GeoJSON-like dictionary containing feature objects
     into a pandas DataFrame.
     """
-    print(data)
     features = data.get("features", [])
     if not features:
         return pd.DataFrame()
@@ -84,7 +83,6 @@ def main():
             "endtime": end,
             "limit": "100",
         }
-        print(fetch_earthquake_data(payload))
         df = parse_geojson_features(fetch_earthquake_data(payload))
 
         if df.empty:
