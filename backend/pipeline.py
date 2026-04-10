@@ -10,6 +10,7 @@ import os
 import requests
 import psycopg
 
+
 logging.basicConfig(
     level=logging.INFO, format="%(levelname)s - %(message)s - %(asctime)s"
 )
@@ -34,18 +35,18 @@ def initialize_db() -> None:
     conn.commit()
 
 
-def read_data(params):
+def read_data(params: dict) -> dict:
     """
     Retrieves data from USGS API
     """
     response = requests.get(
-        "https://earthquake.usgs.gov/fdsnws/event/1/query?", params=params, timeout=10
+        "https://earthquake.usgs.gov/fdsnws/event/1/query?", params=params, timeout=100
     )
     logging.info("Retrieved earthquakes data")
     return response.json()
 
 
-def write_event(feature):
+def write_event(feature: dict) -> None:
     """
     Writes earthquakes event on a db
     """
@@ -82,23 +83,12 @@ if __name__ == "__main__":
     params = {
         "format": "geojson",
         "starttime": "01-01-2024",
-        "endtime": "01-02-2024",
-        "limit": 10,
+        "endtime": "01-01-2026",
+        "limit": 1000,
     }
 
     response = read_data(params)
     features = response.get("features", [])
-    if features:
-        longitudes = [f["geometry"]["coordinates"][0] for f in features]
-        latitudes = [f["geometry"]["coordinates"][1] for f in features]
-        alerts = [f["properties"].get("alert") for f in features]
-        magnitudes = [f["properties"].get("mag") for f in features]
-        times = [
-            time.strftime(
-                "%Y-%m-%d %H:%M:%S", time.gmtime(f["properties"]["time"] / 1000)
-            )
-            for f in features
-        ]
 
     for f in features:
         write_event(f)

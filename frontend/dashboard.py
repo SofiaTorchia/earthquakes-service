@@ -36,10 +36,11 @@ def parse_geojson_features(data):
     latitudes = [f["geometry"]["coordinates"][1] for f in features]
     alerts = [f["properties"].get("alert") for f in features]
     magnitudes = [f["properties"].get("mag") for f in features]
-    times = [
-        time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(f["properties"]["time"] / 1000))
-        for f in features
-    ]
+    # times = [
+    #    time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(f["properties"]["time"] / 1000))
+    #    for f in features
+    # ]
+    times = [f["properties"]["time"] for f in features]
     df = pd.DataFrame(
         {
             "lat": latitudes,
