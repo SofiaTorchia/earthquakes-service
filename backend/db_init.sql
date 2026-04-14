@@ -1,3 +1,4 @@
+CREATE EXTENSION IF NOT EXISTS postgis;
 
 CREATE TABLE if not exists earthquakes (
     id VARCHAR PRIMARY KEY,

@@ -2,8 +2,10 @@
 Backend service for retrieving earthquake data from the USGS Earthquake API.
 """
 
+import datetime
 import logging
 import os
+import json
 from fastapi import FastAPI
 import psycopg
 
@@ -23,13 +25,15 @@ app = FastAPI()
 
 
 @app.get("/earthquakes")
-async def get_earthquakes(format: str, starttime: str, endtime: str, limit: str):
+async def get_earthquakes(
+    format: str, starttime: datetime.datetime, endtime: datetime.datetime, limit: int
+):
     """
-        Endpoint for retrieving earthquake data from database.
-        The endpoint accepts query parameters that specify the time window and the
-        maximum number of records to return.
-        The response is formatted as a GeoJSON FeatureCollection,
-        which is compatible with the USGS Earthquake API format.
+    Endpoint for retrieving earthquake data from database.
+    The endpoint accepts query parameters that specify the time window and the
+    maximum number of records to return.
+    The response is formatted as a GeoJSON FeatureCollection,
+    which is compatible with the USGS Earthquake API format.
 
     Parameters:
         format (str): Output format expected by the USGS API (e.g., "geojson").
@@ -41,53 +45,42 @@ async def get_earthquakes(format: str, starttime: str, endtime: str, limit: str)
     """
 
     earthquake_events = get_earthquake_data(starttime, endtime, limit)
-    response = {
-        "type": "FeatureCollection",
-        "metadata": {"limit": limit},
-        "features": [],
-    }
-    for event in earthquake_events:
-        feature = format_geojson_feature(event)
-        response["features"].append(feature)
-
     logging.info("Retrieved earthquakes data")
-    return response
+    return earthquake_events
 
 
-def get_earthquake_data(starttime: str, endtime: str, limit: str) -> list[dict]:
+def get_earthquake_data(
+    starttime: datetime.datetime, endtime: datetime.datetime, limit: int
+) -> dict:
     """
-    Retrieves earthquake data from the database based on the specified time window and limit.
+    Retrieves earthquake data from the database as a GeoJSON FeatureCollection.
     """
     with conn.cursor() as cur:
         cur.execute(
             """
-            select json_agg(row_to_json(t))
-            from (
-                select * from earthquakes where time >= %s and time <= %s limit %s 
-            ) as t
+            SELECT json_build_object(
+                'type', 'FeatureCollection',
+                'features', coalesce(json_agg(
+                    json_build_object(
+                        'type', 'Feature',
+                        'id', id,
+                        'geometry', ST_AsGeoJSON(
+                            ST_SetSRID(ST_MakePoint(lon, lat), 4326)
+                        )::json,
+                        'properties', json_build_object(
+                            'magnitude', magnitude,
+                            'time', time,
+                            'alert', alert
+                        )
+                    )
+                ), '[]'::json)
+            ) AS geojson
+            FROM earthquakes
+            WHERE time >= %s AND time <= %s
+            LIMIT %s;
             """,
-            (
-                starttime,
-                endtime,
-                limit,
-            ),
+            (starttime, endtime, limit),
         )
-        return cur.fetchone()[0]
 
-
-def format_geojson_feature(event: dict) -> dict:
-    """Reshapes the earthquake event data into a GeoJSON feature format."""
-    feature = {
-        "type": "Feature",
-        "id": event["id"],
-        "properties": {
-            "mag": event["magnitude"],
-            "time": event["time"],
-            "alert": event["alert"],
-        },
-        "geometry": {
-            "type": "Point",
-            "coordinates": [event["lon"], event["lat"]],
-        },
-    }
-    return feature
+        result = cur.fetchone()[0]
+        return result

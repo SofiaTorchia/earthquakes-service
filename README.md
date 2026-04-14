@@ -11,7 +11,7 @@ This repository contains a FastAPI backend and a Streamlit frontend. The applica
 podman build -t earthquakes_dbimage backend/.
 podman run -d -p 5432:5432 --name earthquakes_dbcontainer earthquakes_dbimage || podman start earthquakes_dbcontainer
 ```
-
+- Start the database with: ```make db```
 - Start the backend with: ```make backend```
 - Start the frontend with: ```make frontend```
 
