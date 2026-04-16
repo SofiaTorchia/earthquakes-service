@@ -76,24 +76,8 @@ def write_event(feature: dict) -> None:
     conn.commit()
 
 
-if __name__ == "__main__":
-    initialize_db()
-    logging.info("Initialized Postgres Database")
-
-    params = {
-        "format": "geojson",
-        "starttime": "01-01-2024",
-        "endtime": "01-01-2026",
-        "limit": 1000,
-    }
-
-    response = read_data(params)
-    features = response.get("features", [])
-
-    for f in features:
-        write_event(f)
-        quake_id = f["id"]
-        logging.info("Written eartquake with id=%s", quake_id)
-
+def close_connection() -> None:
+    """
+    Closes connection to Postgres database
+    """
     conn.close()
-    logging.info("Closed connection to Postgres Database")

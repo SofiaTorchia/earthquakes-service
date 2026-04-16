@@ -2,7 +2,6 @@
 Sreamlit frontend for earthquake-service app
 """
 
-import time
 import streamlit as st
 import pandas as pd
 import requests
@@ -36,10 +35,6 @@ def parse_geojson_features(data):
     latitudes = [f["geometry"]["coordinates"][1] for f in features]
     alerts = [f["properties"].get("alert") for f in features]
     magnitudes = [f["properties"].get("mag") for f in features]
-    # times = [
-    #    time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(f["properties"]["time"] / 1000))
-    #    for f in features
-    # ]
     times = [f["properties"]["time"] for f in features]
     df = pd.DataFrame(
         {
@@ -59,7 +54,7 @@ def fetch_earthquake_data(payload):
     Query the USGS Earthquake API using the provided request parameters.
     """
     if payload:
-        r = requests.get(API_URL, payload, timeout=10)
+        r = requests.get(API_URL, payload, timeout=1000)
         return r.json()
     return {}
 
@@ -82,7 +77,7 @@ def main():
             "format": "geojson",
             "starttime": start,
             "endtime": end,
-            "limit": "100",
+            "limit": "10000",
         }
         df = parse_geojson_features(fetch_earthquake_data(payload))
 
@@ -90,7 +85,7 @@ def main():
             st.write("No earthquakes occurred.")
         else:
             st.map(df)
-            st.write("Real-time data taken from https://earthquake.usgs.gov/")
+            st.write("Data source: https://earthquake.usgs.gov/")
     else:
         return
     return
