@@ -5,7 +5,6 @@ Backend service for retrieving earthquake data from the USGS Earthquake API.
 import datetime
 import logging
 import os
-import json
 from fastapi import FastAPI
 import psycopg
 
@@ -26,7 +25,7 @@ app = FastAPI()
 
 @app.get("/earthquakes")
 async def get_earthquakes(
-    format: str, starttime: datetime.datetime, endtime: datetime.datetime, limit: int
+    starttime: datetime.datetime, endtime: datetime.datetime, limit: int
 ):
     """
     Endpoint for retrieving earthquake data from database.
@@ -36,7 +35,6 @@ async def get_earthquakes(
     which is compatible with the USGS Earthquake API format.
 
     Parameters:
-        format (str): Output format expected by the USGS API (e.g., "geojson").
         starttime (str): Start of the time window for the earthquake search (ISO 8601 string).
         endtime (str): End of the time window for the earthquake search (ISO 8601 string).
         limit (str):  Maximum number of earthquake records to return.

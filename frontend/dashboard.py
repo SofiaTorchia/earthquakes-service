@@ -2,6 +2,8 @@
 Sreamlit frontend for earthquake-service app
 """
 
+from datetime import datetime
+
 import streamlit as st
 import pandas as pd
 import requests
@@ -54,7 +56,7 @@ def fetch_earthquake_data(payload):
     Query the USGS Earthquake API using the provided request parameters.
     """
     if payload:
-        r = requests.get(API_URL, payload, timeout=1000)
+        r = requests.get(API_URL, payload, timeout=3000)
         return r.json()
     return {}
 
@@ -74,13 +76,11 @@ def main():
 
     if st.button("Display Data"):
         payload = {
-            "format": "geojson",
-            "starttime": start,
-            "endtime": end,
+            "starttime": datetime.strptime(start, "%Y-%m-%d"),
+            "endtime": datetime.strptime(end, "%Y-%m-%d"),
             "limit": "10000",
         }
         df = parse_geojson_features(fetch_earthquake_data(payload))
-
         if df.empty:
             st.write("No earthquakes occurred.")
         else:

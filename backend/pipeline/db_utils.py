@@ -11,20 +11,27 @@ import requests
 import psycopg
 
 
+initialization_queries_path = Path("backend/pipeline/db_init.sql")
 logging.basicConfig(
     level=logging.INFO, format="%(levelname)s - %(message)s - %(asctime)s"
 )
-conn = psycopg.connect(
-    dbname=os.getenv("POSTGRES_DB", "postgresDB"),
-    user=os.getenv("POSTGRES_USER", "postgres"),
-    password=os.getenv("POSTGRES_PASSWORD", "pa"),
-    host=os.getenv("POSTGRES_HOST", "localhost"),
-    port=os.getenv("POSTGRES_PORT", "5432"),
-)
-initialization_queries_path = Path("backend/db_init.sql")
 
 
-def initialize_db() -> None:
+def start_db_connection() -> psycopg.Connection:
+    """
+    Starts connection to Postgres database
+    """
+    conn = psycopg.connect(
+        dbname=os.getenv("POSTGRES_DB", "postgresDB"),
+        user=os.getenv("POSTGRES_USER", "postgres"),
+        password=os.getenv("POSTGRES_PASSWORD", "pa"),
+        host=os.getenv("POSTGRES_HOST", "localhost"),
+        port=os.getenv("POSTGRES_PORT", "5432"),
+    )
+    return conn
+
+
+def initialize_db(conn: psycopg.Connection) -> None:
     """
     Initializes earthquakes Postgres database
     """
@@ -40,13 +47,12 @@ def read_data(params: dict) -> dict:
     Retrieves data from USGS API
     """
     response = requests.get(
-        "https://earthquake.usgs.gov/fdsnws/event/1/query?", params=params, timeout=100
+        "https://earthquake.usgs.gov/fdsnws/event/1/query?", params=params, timeout=3000
     )
-    logging.info("Retrieved earthquakes data")
     return response.json()
 
 
-def write_event(feature: dict) -> None:
+def write_event(feature: dict, conn: psycopg.Connection) -> None:
     """
     Writes earthquakes event on a db
     """
@@ -76,8 +82,18 @@ def write_event(feature: dict) -> None:
     conn.commit()
 
 
-def close_connection() -> None:
+def get_earthquake_data(params: dict, conn: psycopg.Connection) -> None:
     """
-    Closes connection to Postgres database
+    Retrieves earthquake data from the database as a GeoJSON FeatureCollection using
+    the provided time window and limit.
     """
+    response = read_data(params)
+    logging.info("Retrieved earthquakes data")
+    features = response.get("features", [])
+
+    for f in features:
+        write_event(f, conn)
+    logging.info(f"Written {len(features)} earthquake events")
+
     conn.close()
+    logging.info("Closed connection to Postgres Database")

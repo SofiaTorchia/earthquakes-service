@@ -1,0 +1,4 @@
+params:
+  format: "geojson"
+  delta_days: 7
+  limit: 1000
