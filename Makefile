@@ -26,7 +26,7 @@ clean: black mypy pylint
 
 .PHONY: db_init
 db_init: 
-	podman build -t earthquakes_dbimage backend/pipeline/.
+	podman build -t earthquakes_dbimage backend/.
 	podman run -d -p 5432:5432 --name earthquakes_dbcontainer earthquakes_dbimage || podman start earthquakes_dbcontainer
 	uv run python backend/pipeline/db_init.py
 

@@ -7,14 +7,24 @@ import logging
 import time
 from pathlib import Path
 import os
+import datetime
 import requests
 import psycopg
+from pydantic.dataclasses import dataclass
 
 
 initialization_queries_path = Path("backend/pipeline/db_init.sql")
 logging.basicConfig(
     level=logging.INFO, format="%(levelname)s - %(message)s - %(asctime)s"
 )
+
+
+@dataclass
+class Params:
+    format: str
+    starttime: str
+    endtime: str
+    limit: int
 
 
 def start_db_connection() -> psycopg.Connection:
@@ -35,7 +45,7 @@ def initialize_db(conn: psycopg.Connection) -> None:
     """
     Initializes earthquakes Postgres database
     """
-    with open(initialization_queries_path, "r") as f:
+    with open(initialization_queries_path, "r", encoding="utf-8") as f:
         query = f.read()
     with conn.cursor() as cur:
         cur.execute(query)
@@ -82,18 +92,25 @@ def write_event(feature: dict, conn: psycopg.Connection) -> None:
     conn.commit()
 
 
-def get_earthquake_data(params: dict, conn: psycopg.Connection) -> None:
+def get_earthquake_data(params: Params, conn: psycopg.Connection) -> None:
     """
     Retrieves earthquake data from the database as a GeoJSON FeatureCollection using
     the provided time window and limit.
     """
-    response = read_data(params)
+
+    api_params = {
+        "format": params.format,
+        "starttime": params.starttime,
+        "endtime": params.endtime,
+        "limit": params.limit,
+    }
+    response = read_data(api_params)
     logging.info("Retrieved earthquakes data")
     features = response.get("features", [])
 
     for f in features:
         write_event(f, conn)
-    logging.info(f"Written {len(features)} earthquake events")
+    logging.info("Written %d earthquake events", len(features))
 
     conn.close()
     logging.info("Closed connection to Postgres Database")

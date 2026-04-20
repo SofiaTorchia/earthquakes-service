@@ -1,5 +1,0 @@
-params: 
-  format: "geojson"
-  starttime: "01-01-2024"
-  endtime: "01-01-2026"
-  limit: 1000
