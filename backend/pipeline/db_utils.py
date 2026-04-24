@@ -1,14 +1,14 @@
 """
-Backend service for retrieving earthquake data from the USGS Earthquake API
-and writing it into a Postgres database
+Backend service for retrieving earthquake data from the
+USGS Earthquake API and writing it into a Postgres database
 """
 
 from datetime import date, timedelta
 import logging
 import time
-import yaml
 from pathlib import Path
 import os
+import yaml
 import requests
 import psycopg
 from pydantic import BaseModel
@@ -22,12 +22,16 @@ logging.basicConfig(
 
 
 class TimeRangeConfig(BaseModel):
+    """Configuration for the time range of earthquake data to retrieve."""
+
     format: str
     delta_days: int
     limit: int
 
 
 class WindowConfig(BaseModel):
+    """Configuration for the time window of earthquake data to retrieve."""
+
     format: str
     starttime: str
     endtime: str
@@ -35,6 +39,8 @@ class WindowConfig(BaseModel):
 
 
 class Config(BaseModel):
+    """Configuration for the earthquake data retrieval and database update."""
+
     update: TimeRangeConfig
     init: WindowConfig
 
@@ -55,9 +61,7 @@ def start_db_connection() -> psycopg.Connection:
 
 
 def initialize_db(conn: psycopg.Connection) -> None:
-    """
-    Initializes earthquakes Postgres database
-    """
+    """Initializes earthquakes Postgres database"""
     with open(initialization_queries_path, "r", encoding="utf-8") as f:
         query = f.read()
     with conn.cursor() as cur:
@@ -67,9 +71,7 @@ def initialize_db(conn: psycopg.Connection) -> None:
 
 
 def read_data(params: dict) -> dict:
-    """
-    Retrieves data from USGS API
-    """
+    """Retrieves data from USGS API"""
     response = requests.get(
         "https://earthquake.usgs.gov/fdsnws/event/1/query?", params=params, timeout=3000
     )
@@ -77,9 +79,7 @@ def read_data(params: dict) -> dict:
 
 
 def write_event(feature: dict, conn: psycopg.Connection) -> None:
-    """
-    Writes earthquakes event on a db
-    """
+    """Writes earthquakes event on a db"""
     lon = feature["geometry"]["coordinates"][0]
     lat = feature["geometry"]["coordinates"][1]
     alert = feature["properties"]["alert"]
@@ -108,8 +108,8 @@ def write_event(feature: dict, conn: psycopg.Connection) -> None:
 
 def get_earthquake_data(window_config: WindowConfig, conn: psycopg.Connection) -> None:
     """
-    Retrieves earthquake data from the database as a GeoJSON FeatureCollection using
-    the provided time window and limit.
+    Retrieves earthquake data from the database as a GeoJSON
+    FeatureCollection using the provided time window and limit.
     """
 
     api_params = {
@@ -145,7 +145,8 @@ def load_config() -> Config:
 
 def get_update_config(config: Config) -> WindowConfig:
     """
-    Extracts the update configuration from the Config object and returns a WindowConfig object.
+    Extracts the update configuration from the Config object
+    and returns a WindowConfig object.
     """
     return WindowConfig(
         format=config.update.format,
