@@ -12,7 +12,6 @@ import os
 import requests
 import psycopg
 from pydantic import BaseModel
-from pydantic.dataclasses import dataclass
 
 
 initialization_queries_path = Path("backend/pipeline/db_init.sql")
@@ -22,15 +21,13 @@ logging.basicConfig(
 )
 
 
-@dataclass
-class TimeRangeConfig:
+class TimeRangeConfig(BaseModel):
     format: str
     delta_days: int
     limit: int
 
 
-@dataclass
-class WindowConfig:
+class WindowConfig(BaseModel):
     format: str
     starttime: str
     endtime: str
