@@ -26,10 +26,15 @@ clean: black mypy pylint
 
 .PHONY: db_init
 db_init: 
-	podman build -t earthquakes_dbimage backend/.
-	podman run -d -p 5432:5432 --name earthquakes_dbcontainer earthquakes_dbimage || podman start earthquakes_dbcontainer
+	podman build -t earthquakes-db:latest backend/.
+	podman run -d -p 5432:5432 --name earthquakes_dbcontainer earthquakes-db:latest || podman start earthquakes_dbcontainer
 	uv run python backend/pipeline/db_init.py
 
 .PHONY: db_update
 db_update: 
 	uv run python backend/pipeline/db_update.py
+
+.PHONY: api_init
+api_init:
+	podman build -t earthquakes-api:latest .
+	podman run -d -p 8000:8000 --name earthquakes_apicontainer earthquakes-api:latest || podman start earthquakes_apicontainer
