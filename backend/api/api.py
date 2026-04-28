@@ -6,13 +6,19 @@ import datetime
 import logging
 import os
 from fastapi import FastAPI
+from fastapi.concurrency import asynccontextmanager
 import psycopg
 
+logging.basicConfig(
+    level=logging.INFO, format="%(levelname)s - %(message)s - %(asctime)s"
+)
+conn = None
 
-def start_railway_db_connection() -> psycopg.Connection:
-    """
-    Starts connection to Postgres database
-    """
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global conn
+    logging.info("Connecting to Postgres...")
     conn = psycopg.connect(
         dbname=os.getenv("PGDATABASE"),
         user=os.getenv("PGUSER"),
@@ -20,17 +26,14 @@ def start_railway_db_connection() -> psycopg.Connection:
         host=os.getenv("PGHOST"),
         port=os.getenv("PGPORT"),
     )
+    logging.info("Connected to Postgres")
+    yield
+    if conn:
+        conn.close()
+        logging.info("Closed Postgres connection")
 
-    logging.info("Started connection to Postgres Database")
-    return conn
 
-
-logging.basicConfig(
-    level=logging.INFO, format="%(levelname)s - %(message)s - %(asctime)s"
-)
-
-app = FastAPI()
-start_railway_db_connection()
+app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/earthquakes")
