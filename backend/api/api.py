@@ -8,13 +8,23 @@ import os
 from fastapi import FastAPI
 import psycopg
 
-conn = psycopg.connect(
+conn_general = psycopg.connect(
     dbname=os.getenv("POSTGRES_DB", "postgresDB"),
     user=os.getenv("POSTGRES_USER", "postgres"),
     password=os.getenv("POSTGRES_PASSWORD", "pa"),
     host=os.getenv("POSTGRES_HOST", "localhost"),
     port=os.getenv("POSTGRES_PORT", "5432"),
 )
+
+conn_railway = psycopg.connect(
+    dbname=os.getenv("PGDATABASE"),
+    user=os.getenv("PGUSER"),
+    password=os.getenv("PGPASSWORD"),
+    host=os.getenv("PGHOST"),
+    port=os.getenv("PGPORT"),
+)
+conn = conn_railway
+
 
 logging.basicConfig(
     level=logging.INFO, format="%(levelname)s - %(message)s - %(asctime)s"
