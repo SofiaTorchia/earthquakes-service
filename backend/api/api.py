@@ -20,9 +20,9 @@ async def lifespan(app: FastAPI):
     global conn
     logging.info("Connecting to Postgres...")
     conn = psycopg.connect(
-        dbname=os.getenv("PGDATABASE"),
-        user=os.getenv("PGUSER"),
-        password=os.getenv("PGPASSWORD"),
+        dbname=os.getenv("POSTGRES_DB"),
+        user=os.getenv("POSTGRES_USER"),
+        password=os.getenv("POSTGRES_PASSWORD"),
         host=os.getenv("PGHOST"),
         port=os.getenv("PGPORT"),
     )
