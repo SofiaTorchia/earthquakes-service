@@ -5,7 +5,7 @@ COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen
 COPY . .
 EXPOSE 8000
-CMD ["uv", "run","backend/pipeline/db_init.py","backend/pipeline/db_update.py"]
+CMD ["uv", "run","backend/pipeline/db_init.py"]
 
 
 
