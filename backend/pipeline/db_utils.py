@@ -44,12 +44,13 @@ def start_db_connection() -> psycopg.Connection:
     Starts connection to Postgres database
     """
     conn = psycopg.connect(
-        dbname=os.getenv("POSTGRES_DB", "postgresDB"),
-        user=os.getenv("POSTGRES_USER", "postgres"),
-        password=os.getenv("POSTGRES_PASSWORD", "pa"),
-        host=os.getenv("POSTGRES_HOST", "localhost"),
-        port=os.getenv("POSTGRES_PORT", "5432"),
+        dbname=os.getenv("PGDATABASE"),
+        user=os.getenv("PGUSER"),
+        password=os.getenv("PGPASSWORD"),
+        host=os.getenv("PGHOST"),
+        port=os.getenv("PGPORT"),
     )
+
     logging.info("Started connection to Postgres Database")
     return conn
 
