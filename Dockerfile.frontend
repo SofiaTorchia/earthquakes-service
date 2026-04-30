@@ -5,7 +5,7 @@ COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen
 COPY . .
 EXPOSE 8000
-CMD ["uv", "run", "streamlit", "run", "frontend/dashboard.py"]
+CMD ["uv", "run", "streamlit", "run", "frontend/dashboard.py", "--server.port", "$PORT", "--server.address", "0.0.0.0"]
 
 
 
