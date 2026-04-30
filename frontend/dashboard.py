@@ -9,7 +9,8 @@ import pandas as pd
 import requests
 
 #API_URL = "http://127.0.0.1:8000/earthquakes"
-API_URL = "earthquakes-service.railway.internal/earthquakes"
+API_URL = "http://earthquakes-service.railway.internal:8000/earthquakes"
+
 
 
 def choose_date():
