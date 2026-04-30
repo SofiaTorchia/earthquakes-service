@@ -10,9 +10,7 @@ import requests
 
 #API_URL = "http://127.0.0.1:8000/earthquakes"
 #API_URL = "https://earthquakes-api-production.up.railway.app/earthquakes"
-API_URL = "https://earthquakes-api.railway.internal:8080/earthquakes"
-
-
+API_URL = "http://earthquakes-api.railway.internal:8080/earthquakes"
 
 
 def choose_date():
