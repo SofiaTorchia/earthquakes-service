@@ -8,7 +8,8 @@ import streamlit as st
 import pandas as pd
 import requests
 
-API_URL = "http://127.0.0.1:8000/earthquakes"
+#API_URL = "http://127.0.0.1:8000/earthquakes"
+API_URL = "earthquakes-service.railway.internal/earthquakes"
 
 
 def choose_date():
