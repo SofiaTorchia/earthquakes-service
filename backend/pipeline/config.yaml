@@ -1,9 +1,9 @@
 update:
   format: "geojson"
   delta_days: 7
-  limit: 1000
+  limit: 20000
 init: 
   format: "geojson"
-  starttime: "2024-01-01"
-  endtime: "2026-01-01"
-  limit: 1000
+  starttime: "2026-01-01"
+  endtime: "2026-05-01"
+  limit: 20000
