@@ -5,5 +5,5 @@ update:
 init: 
   format: "geojson"
   starttime: "2026-01-01"
-  endtime: "2026-02-25"
+  endtime: "2026-02-07"
   limit: 20000
