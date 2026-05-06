@@ -64,12 +64,11 @@ def main():
         "occurred since Jan 1st, 2026 until today."
     )
     range = st.date_input("", (MIN_DATE, MAX_DATE), min_value=MIN_DATE, max_value=MAX_DATE)
-    start, end = range
 
     if st.button("Display Data"):
         payload = {
-            "starttime": start.strftime("%Y-%m-%d"),
-            "endtime": end.strftime("%Y-%m-%d"),
+            "starttime": range[0].strftime("%Y-%m-%d"),
+            "endtime": range[1].strftime("%Y-%m-%d"),
             "limit": LIMIT,
         }
         df = parse_geojson_features(fetch_earthquake_data(payload))
