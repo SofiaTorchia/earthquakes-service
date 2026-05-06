@@ -65,6 +65,16 @@ def main():
     )
     range = st.date_input("", (MIN_DATE, MAX_DATE), min_value=MIN_DATE, max_value=MAX_DATE)
 
+    st.markdown(
+        """
+        <div style='text-align:center; margin-top:2rem; opacity:0.7;'>
+            Built by Sofia Torchia
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
     if st.button("Display Data"):
         payload = {
             "starttime": range[0].strftime("%Y-%m-%d"),
@@ -80,6 +90,5 @@ def main():
     else:
         return
     return
-
 
 main()
