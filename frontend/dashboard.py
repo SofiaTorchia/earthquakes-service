@@ -15,13 +15,6 @@ MAX_DATE = "today"
 LIMIT = 20000
 
 
-def choose_date():
-    """
-    Display two Streamlit date selectors and return the chosen
-    start and end dates.
-    """
-    return st.date_input("", (MIN_DATE, MAX_DATE), min_value=MIN_DATE, max_value=MAX_DATE)
-
 
 @st.cache_data()
 def parse_geojson_features(data):
@@ -68,10 +61,10 @@ def main():
     st.write(
         ""
         "Select starting and ending dates and view up to 20 thousands earthquakes "
-        "occurred during this time span. Choose whether to focus on a limited area "
-        "or to have a global perspective."
+        "occurred since Jan 1st, 2026 until today."
     )
-    start, end = st.date_input("", (MIN_DATE, MAX_DATE), min_value=MIN_DATE, max_value=MAX_DATE)
+    range = st.date_input("", (MIN_DATE, MAX_DATE), min_value=MIN_DATE, max_value=MAX_DATE)
+    start, end = range
 
     if st.button("Display Data"):
         payload = {
