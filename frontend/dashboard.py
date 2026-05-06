@@ -8,20 +8,12 @@ import streamlit as st
 import pandas as pd
 import requests
 
-API_URL = "http://127.0.0.1:8000/earthquakes"
+API_URL = "http://earthquakes-api.railway.internal:8080/earthquakes"
+#API_URL = "http://localhost:8000/earthquakes"
+MIN_DATE = datetime(2026, 1, 1)
+MAX_DATE = "today"
+LIMIT = 20000
 
-
-def choose_date():
-    """
-    Display two Streamlit date selectors and return the chosen
-    start and end dates.
-    """
-    col1, col2 = st.columns(2)
-    with col1:
-        start = str(st.date_input("Start date"))
-    with col2:
-        end = str(st.date_input("End date"))
-    return start, end
 
 
 @st.cache_data()
@@ -68,17 +60,16 @@ def main():
     st.title("Earthquakes")
     st.write(
         ""
-        "Select starting and ending dates and view up to 10 thousands earthquakes "
-        "occurred during this time span. Choose whether to focus on a limited area "
-        "or to have a global perspective."
+        "Select starting and ending dates and view up to 20 thousands earthquakes "
+        "occurred since Jan 1st, 2026 until today."
     )
-    start, end = choose_date()
+    range = st.date_input("", (MIN_DATE, MAX_DATE), min_value=MIN_DATE, max_value=MAX_DATE)
 
     if st.button("Display Data"):
         payload = {
-            "starttime": datetime.strptime(start, "%Y-%m-%d"),
-            "endtime": datetime.strptime(end, "%Y-%m-%d"),
-            "limit": "10000",
+            "starttime": range[0].strftime("%Y-%m-%d"),
+            "endtime": range[1].strftime("%Y-%m-%d"),
+            "limit": LIMIT,
         }
         df = parse_geojson_features(fetch_earthquake_data(payload))
         if df.empty:
@@ -89,6 +80,5 @@ def main():
     else:
         return
     return
-
 
 main()

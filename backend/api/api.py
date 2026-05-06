@@ -6,21 +6,34 @@ import datetime
 import logging
 import os
 from fastapi import FastAPI
+from fastapi.concurrency import asynccontextmanager
 import psycopg
-
-conn = psycopg.connect(
-    dbname=os.getenv("POSTGRES_DB", "postgresDB"),
-    user=os.getenv("POSTGRES_USER", "postgres"),
-    password=os.getenv("POSTGRES_PASSWORD", "pa"),
-    host=os.getenv("POSTGRES_HOST", "localhost"),
-    port=os.getenv("POSTGRES_PORT", "5432"),
-)
 
 logging.basicConfig(
     level=logging.INFO, format="%(levelname)s - %(message)s - %(asctime)s"
 )
+conn = None
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global conn
+    logging.info("Connecting to Postgres...")
+    conn = psycopg.connect(
+        dbname=os.getenv("POSTGRES_DB"),
+        user=os.getenv("POSTGRES_USER"),
+        password=os.getenv("POSTGRES_PASSWORD"),
+        host=os.getenv("PGHOST"),
+        port=os.getenv("PGPORT"),
+    )
+    logging.info("Connected to Postgres")
+    yield
+    if conn:
+        conn.close()
+        logging.info("Closed Postgres connection")
+
+
+app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/earthquakes")

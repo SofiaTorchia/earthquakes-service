@@ -1,0 +1,11 @@
+from python:3.10
+RUN pip install uv
+WORKDIR /app
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen
+COPY . .
+CMD uv run streamlit run frontend/dashboard.py --server.port $PORT --server.address 0.0.0.0
+
+
+
+
